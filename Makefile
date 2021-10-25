@@ -1,5 +1,5 @@
 CXX=g++
-CPPFLAGS=-I./include -I./include/glad
+CPPFLAGS=-I./include
 LDFLAGS=-lglfw -lX11 -lpthread -lXrandr -lXi -ldl
 
 SOURCE=\
