@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]]; then
+  echo "SHIT!"
+  exit 1
+fi
+
+filename=$1
+tmpdir=$(mktemp -d)
+tmpfile=$tmpdir/deps
+grep -F "#include" $filename | grep -F '"' | awk -F'//' '{print $1}' | grep -F "#include" | awk '{print $2}' | cut -d'"' -f2 > $tmpfile
+# get directory of file
+relativedir=$(dirname $filename | sed 's/src//' | cut -d'/' -f2-)
+if [[ $relativedir == "" ]]; then
+  relativedir="."
+fi
+# echo $relativedir
+
+cat $tmpfile | sed -e "s:^:${relativedir}/:" | sed -e "s:^\./::" | sed -e "s:^:include/:"
+# cat $tmpfile
+
+rm -r $tmpdir
