@@ -50,28 +50,8 @@ unsigned int compileShader(const char * filename, GLenum shader_type) {
   return shader;
 }
 
-unsigned int createVertexBuffer(GLFWwindow * window) {
-  float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-  }; 
 
-  // vertex buffer, for abstracting memory transfer between CPU and GPU
-  unsigned int VBO;
-  glGenBuffers(1, &VBO); // 1 is the number of buffers
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // can use GL_DYNAMIC_DRAW to specify that the data will change.
-
-  // args: location of vertex attribute, size of each attribute, whether to normalize, stride, offset of start of data
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  return VBO;
-}
-
-
-GLFWwindow * initGLFW() {
+GLFWwindow * initGLFW(unsigned int * VAO) {
   glfwInit();
   // configure GLFW window handling
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -98,7 +78,6 @@ GLFWwindow * initGLFW() {
   // Can make other viewports for other things we want to display
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // sets the function to be called
-  unsigned int VBO = createVertexBuffer(window);
   unsigned int vertex_shader = compileShader("shaders/default.vert", GL_VERTEX_SHADER);
   unsigned int fragment_shader = compileShader("shaders/default.frag", GL_FRAGMENT_SHADER);
 
@@ -118,7 +97,30 @@ GLFWwindow * initGLFW() {
   glDeleteShader(vertex_shader); // have to delete the objects once they are linked
   glDeleteShader(fragment_shader);
 
-  // actually draw triangle
+
+  // DRAW TRIANGLE
+
+  float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f
+  }; 
+  // vertex buffer, for abstracting memory transfer between CPU and GPU
+
+  // args: location of vertex attribute, size of each attribute, whether to normalize, stride, offset of start of data
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+	glGenVertexArrays(1, VAO);
+	glBindVertexArray(*VAO);
+	// 2. copy our vertices array in a buffer for OpenGL to use
+  unsigned int VBO;
+  glGenBuffers(1, &VBO); // 1 is the number of buffers
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3. then set our vertex attributes pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0); 
+
 
 
   return window;
@@ -133,7 +135,8 @@ void processInput(GLFWwindow *window)
 }
 
 int main() {
-  GLFWwindow* window = initGLFW();
+  unsigned int VAO;
+  GLFWwindow* window = initGLFW(&VAO);
   printf("Hello, world\n");
 
   // render loop ends when window has the should close property set to true
@@ -143,6 +146,9 @@ int main() {
     // rendering commands go here
     glClearColor(.2f, .3f, .3f, 1.f); // sets the color that we are clearing to a dark blue-green
     glClear(GL_COLOR_BUFFER_BIT); // clears backbuffer
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(window); // all rendering is done on backbuffer, this swaps with front buffer, flushing backbuffer
     glfwPollEvents(); // looks for any new events
