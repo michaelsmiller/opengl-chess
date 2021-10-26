@@ -26,6 +26,7 @@ main: $(OBJECTS)
 	@$(CXX) $(CPPFLAGS) -o $@ $^ $(LDFLAGS)
 
 test: main
+	@clear
 	@./main
 
 clean:
