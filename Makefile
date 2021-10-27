@@ -2,8 +2,8 @@ CXX=g++
 CPPFLAGS=-I./include
 LDFLAGS=-lglfw -lX11 -lpthread -lXrandr -lXi -ldl
 
-SRC_HEADERS=$(shell find src -type f -name "*.h")
-HEADERS=$(subst src/,include/,$(SRC_HEADERS))
+# automatically copy every header file in the source directory into the include/ directory
+HEADERS=$(subst src/,include/,$(shell find src -type f -name "*.h"))
 
 SOURCE=\
        src/main.cpp \
@@ -14,8 +14,9 @@ OBJECTS=$(SOURCE:src/%.cpp=obj/%.o)
 default: clean main test
 
 include/%.h: src/%.h
+	@echo "Copying $< > $@"
 	@mkdir -p $(dir $@)
-	cp $< $@
+	@cp $< $@
 
 headers: $(HEADERS)
 
