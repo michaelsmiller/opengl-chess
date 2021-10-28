@@ -8,7 +8,7 @@ HEADERS=$(subst src/,include/,$(shell find src -type f -name "*.h"))
 SOURCE=\
        src/main.cpp \
        src/graphics/triangles.cpp \
-       src/glad/glad.cpp
+       src/graphics/glad/glad.cpp
 OBJECTS=$(SOURCE:src/%.cpp=obj/%.o)
 
 default: clean main test
@@ -36,4 +36,4 @@ clean:
 	@rm -rf obj include
 	@rm -f main *.d *.o
 
-.PHONY: test clean default headers
+.PHONY: test clean default

@@ -28,11 +28,17 @@ struct vec3 {
   };
 };
 
+struct Triangle {
+  vec2 position;
+  // What is going on
+};
+
 class TriangleRenderer {
 private:
   GLFWwindow * window; // The place we are rendering everything
-  glid vao; // vertex array object
-  glid vertex_buffer; // the vertex buffer object
+  glid vao;            // vertex array object
+  glid vertex_buffer;  // the vertex buffer object
+  glid element_buffer; // buffer containing the index data
 
   int frame_counter;
 
@@ -47,7 +53,7 @@ public:
   void swapBuffer();
 
   void terminate();
-  void afterSwap();
+  void afterSwap(); // things to do between iterations
 };
 
 #endif

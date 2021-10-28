@@ -5,7 +5,7 @@
 #include <fstream> // for reading in a file
 #include <string> // std::string
 
-#include "glad/glad.h" // generated file that deals with OpenGL for us theoretically
+#include "graphics/glad/glad.h" // generated file that deals with OpenGL for us theoretically
 #include <GLFW/glfw3.h>
 
 #include "triangles.h"
@@ -68,7 +68,9 @@ void TriangleRenderer::draw() {
   glClear(GL_COLOR_BUFFER_BIT); // clears backbuffer
 
   // draw triangles
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  /* glDrawArrays(GL_TRIANGLES, 0, 3); */
 }
 
 
@@ -134,26 +136,36 @@ TriangleRenderer::TriangleRenderer() {
   glDeleteShader(vertex_shader); // have to delete the objects once they are linked
   glDeleteShader(fragment_shader);
 
-
   // DEFINE TRIANGLE
   // [-1, 1] x [-1, 1]
-  vec3 vertices[] = {
-    {-0.5f, -0.5f, 0.0f},
-    { 0.5f, -0.5f, 0.0f},
-    { 0.0f,  0.5f, 0.0f}
+  vec2 vertices[] = {
+    {-0.5f,  0.5f},
+    {-0.5f, -0.5f},
+    { 0.5f, -0.5f},
+    { 0.5f,  0.5f}
+  };
+  unsigned int indices[] = {
+    0,1,2,
+    0,2,3
   };
   // vertex buffer, for abstracting memory transfer between CPU and GPU
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+  // these functions apply to vertex_buffer above
   glGenBuffers(1, &vertex_buffer); // 1 is the number of buffers
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-  // these functions apply to vertex_buffer above
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // element buffer
+  glGenBuffers(1, &element_buffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer); // binds element_buffer for whatever the below call
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 
   // args: which array, number of components in an array, type (size) of each attribute, whether to normalize, stride, offset of start of data
   // These lines set up the first attribute of the VAO
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); // specifies 1 attribute of each vertex: the position
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 0); // enables the first attribute of the vertex array
 }

@@ -2,13 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// for debugging!
-#include <fstream> // for reading in a file
-#include <string> // std::string
-#include "glad/glad.h" // generated file that deals with OpenGL for us theoretically
-#include <GLFW/glfw3.h>
-// end debugging
-
 #include "graphics/triangles.h"
 
 int main() {
