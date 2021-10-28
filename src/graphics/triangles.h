@@ -9,28 +9,24 @@
 typedef GLuint glid; // for OpenGL objects
 
 struct vec2 {
-  union {
-    struct {
-      float x;
-      float y;
-    };
-    float data[2];
-  };
+  float x;
+  float y;
 };
 struct vec3 {
-  union {
-    struct {
-      float x;
-      float y;
-      float z;
-    };
-    float data[3];
-  };
+  float x;
+  float y;
+  float z;
+};
+struct vec4 {
+  float x;
+  float y;
+  float z;
+  float w;
 };
 
-struct Triangle {
+struct vertex_data {
   vec2 position;
-  // What is going on
+  vec4 color;
 };
 
 class TriangleRenderer {
@@ -39,6 +35,8 @@ private:
   glid vao;            // vertex array object
   glid vertex_buffer;  // the vertex buffer object
   glid element_buffer; // buffer containing the index data
+
+  glid shader_program; // the shader pipeline
 
   int frame_counter;
 

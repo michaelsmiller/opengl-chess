@@ -1,7 +1,7 @@
 /* #include <GLFW/glfw3.h> */
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <math.h> // for sin
 #include <fstream> // for reading in a file
 #include <string> // std::string
 
@@ -67,10 +67,17 @@ void TriangleRenderer::draw() {
   glClearColor(.2f, .3f, .3f, 1.f); // sets the color that we are clearing to a dark blue-green
   glClear(GL_COLOR_BUFFER_BIT); // clears backbuffer
 
+  // assign color that's a function of time
+  float t = glfwGetTime();
+  float val = 0.5 + (0.5 * sin(t));
+  glUseProgram(shader_program); // need to do this to ensure the correct program is being used
+  int time_val_loc = glGetUniformLocation(shader_program, "time_val");
+  glUniform1f(time_val_loc, val);
+
+
   // draw triangles
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-  /* glDrawArrays(GL_TRIANGLES, 0, 3); */
 }
 
 
@@ -122,7 +129,7 @@ TriangleRenderer::TriangleRenderer() {
   // SHADERS
   glid vertex_shader = compileShader("shaders/default.vert", GL_VERTEX_SHADER);
   glid fragment_shader = compileShader("shaders/default.frag", GL_FRAGMENT_SHADER);
-  glid shader_program = glCreateProgram();
+  shader_program = glCreateProgram();
   glAttachShader(shader_program, vertex_shader);
   glAttachShader(shader_program, fragment_shader);
   glLinkProgram(shader_program); // I think this actually calls a linker, this is where dimensionality check happens
@@ -138,11 +145,11 @@ TriangleRenderer::TriangleRenderer() {
 
   // DEFINE TRIANGLE
   // [-1, 1] x [-1, 1]
-  vec2 vertices[] = {
-    {-0.5f,  0.5f},
-    {-0.5f, -0.5f},
-    { 0.5f, -0.5f},
-    { 0.5f,  0.5f}
+  vertex_data vertices[] = {
+    {{-0.5f,  0.5f},{0. ,1. ,0. ,1. }},
+    {{-0.5f, -0.5f},{1. ,0. ,0. ,1. }}, 
+    {{ 0.5f, -0.5f},{0. ,0. ,1. ,1. }}, 
+    {{ 0.5f,  0.5f},{0. ,0. ,0.5,1.}}
   };
   unsigned int indices[] = {
     0,1,2,
@@ -165,7 +172,9 @@ TriangleRenderer::TriangleRenderer() {
 
 
   // args: which array, number of components in an array, type (size) of each attribute, whether to normalize, stride, offset of start of data
-  // These lines set up the first attribute of the VAO
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), (void*)0); // specifies 1 attribute of each vertex: the position
+  // These lines set up the attributes of the vertex buffer object
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data), (void*)0); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 0); // enables the first attribute of the vertex array
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_data), (void*)(2*sizeof(float))); // specifies 1 attribute of each vertex: the position
+	glEnableVertexArrayAttrib(vao, 1); // enables the first attribute of the vertex array
 }
