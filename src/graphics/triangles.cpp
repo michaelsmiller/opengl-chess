@@ -9,49 +9,13 @@
 #include <GLFW/glfw3.h>
 
 #include "triangles.h"
+#include "shader.h" // for ShaderProgram
 
 // Called every time window is resized
 static void
 framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }  
-
-static glid
-compileShader(const char * filename, GLenum shader_type) {
-  std::ifstream file(filename, std::ifstream::binary);
-  if (!file.is_open()) {
-    printf("Could not open %s\n", filename);
-    exit(1);
-  }
-
-  // get size of file
-  file.seekg(0, file.end);
-  int length = file.tellg();
-  file.seekg(0, file.beg);
-
-  char * buffer = new char[length];
-  file.read(buffer, length);
-  file.close();
-
-  // shader shit with buffer
-  unsigned int shader = glCreateShader(shader_type); // hardcode type of shader for now
-  glShaderSource(shader, 1, &buffer, NULL);
-  glCompileShader(shader);
-
-  // check if compilation successful
-  int success;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    printf("Failed to compile shader %s\n", filename);
-    exit(1);
-  }
-  else {
-    printf("Compiling shader: %s\n", filename);
-  }
-
-  delete[] buffer;
-  return shader;
-}
 
 void
 TriangleRenderer::processInput()
@@ -70,16 +34,15 @@ void TriangleRenderer::draw() {
   // assign color that's a function of time
   float t = glfwGetTime();
   float val = 0.5 + (0.5 * sin(t));
-  glUseProgram(shader_program); // need to do this to ensure the correct program is being used
-  int time_val_loc = glGetUniformLocation(shader_program, "time_val");
-  glUniform1f(time_val_loc, val);
+  shader_program->use(); // use the shader program
+  // Set uniforms
+  shader_program->setFloat("time_val", val);
 
 
   // draw triangles
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
-
 
 bool TriangleRenderer::shouldClose() {
   return glfwWindowShouldClose(window);
@@ -126,22 +89,10 @@ TriangleRenderer::TriangleRenderer() {
   // Can make other viewports for other things we want to display
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // sets the function to be called
 
-  // SHADERS
-  glid vertex_shader = compileShader("shaders/default.vert", GL_VERTEX_SHADER);
-  glid fragment_shader = compileShader("shaders/default.frag", GL_FRAGMENT_SHADER);
-  shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program); // I think this actually calls a linker, this is where dimensionality check happens
-  int success;
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  if (!success) {
-    printf("Failed to link shading program!\n");
-    exit(1);
-  }
-  glUseProgram(shader_program);
-  glDeleteShader(vertex_shader); // have to delete the objects once they are linked
-  glDeleteShader(fragment_shader);
+  // Compile shaders and link them together into an active program
+  const GLenum shader_types[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+  const char * shader_paths[] = {"shaders/default.vert", "shaders/default.frag"};
+  shader_program = new ShaderProgram(2, shader_types, shader_paths);
 
   // DEFINE TRIANGLE
   // [-1, 1] x [-1, 1]

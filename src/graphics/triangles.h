@@ -3,26 +3,12 @@
 
 #include <GLFW/glfw3.h> // for types
 
+#include "types.h" // for glid, vec2, vec4
+
 #define WIDTH  600
 #define HEIGHT 600
 
-typedef GLuint glid; // for OpenGL objects
-
-struct vec2 {
-  float x;
-  float y;
-};
-struct vec3 {
-  float x;
-  float y;
-  float z;
-};
-struct vec4 {
-  float x;
-  float y;
-  float z;
-  float w;
-};
+class ShaderProgram; // forward definition, in shader.h
 
 struct vertex_data {
   vec2 position;
@@ -36,7 +22,7 @@ private:
   glid vertex_buffer;  // the vertex buffer object
   glid element_buffer; // buffer containing the index data
 
-  glid shader_program; // the shader pipeline
+  ShaderProgram * shader_program; // the shader pipeline
 
   int frame_counter;
 
