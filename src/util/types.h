@@ -2,10 +2,11 @@
 #define TYPES_H_
 
 #include <stddef.h>
+#include <GLFW/glfw3.h> // for GLuint
 
-// import math types too!
 typedef GLuint glid; // for OpenGL objects
 
+// math types
 struct vec2 {
   float x;
   float y;

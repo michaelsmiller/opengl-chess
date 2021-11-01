@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h> // for types
 
-#include "types.h" // for glid, vec2, vec4
+#include <util/types.h> // for glid, vec2, vec4
 
 #define WIDTH  600
 #define HEIGHT 600
@@ -29,6 +29,7 @@ private:
 public:
   // Instantiate window
   TriangleRenderer();
+  ~TriangleRenderer();
 
   void addRenderer(const char * name, const GLenum shader_type);
   bool shouldClose();

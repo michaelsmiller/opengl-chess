@@ -6,8 +6,8 @@
 #include <iostream>
 #include <assert.h>
 
-#include "types.h"
-#include "util.h"
+#include <util/types.h>
+#include <util/util.h>
 #include "shader.h"
 
 Shader::Shader(const GLenum shader_type, const char * filename) : type(shader_type) {

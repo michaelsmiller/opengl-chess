@@ -62,6 +62,11 @@ void TriangleRenderer::terminate() {
   glfwTerminate();
 }
 
+TriangleRenderer::~TriangleRenderer() {
+  if (shader_program != nullptr)
+    delete shader_program;
+}
+
 TriangleRenderer::TriangleRenderer() {
   frame_counter = 0;
   // configure GLFW window handling
