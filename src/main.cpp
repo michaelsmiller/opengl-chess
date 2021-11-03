@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "graphics/triangles.h"
+#include "graphics/renderer.h"
 
 int main() {
   printf("Hello, world\n");
-  TriangleRenderer renderer; // calls constructor
+  BoardRenderer renderer; // calls constructor
 
   // render loop ends when window has the should close property set to true
   while(!renderer.shouldClose()) {

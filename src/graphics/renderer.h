@@ -15,7 +15,7 @@ struct vertex_data {
   vec4 color;
 };
 
-class TriangleRenderer {
+class BoardRenderer {
 private:
   GLFWwindow * window; // The place we are rendering everything
   glid vao;            // vertex array object
@@ -28,8 +28,8 @@ private:
 
 public:
   // Instantiate window
-  TriangleRenderer();
-  ~TriangleRenderer();
+  BoardRenderer();
+  ~BoardRenderer();
 
   void addRenderer(const char * name, const GLenum shader_type);
   bool shouldClose();

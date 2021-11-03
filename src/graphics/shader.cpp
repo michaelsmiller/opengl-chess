@@ -10,6 +10,8 @@
 #include <util/util.h>
 #include "shader.h"
 
+static char buf[512]; // for error messages
+
 Shader::Shader(const GLenum shader_type, const char * filename) : type(shader_type) {
   std::ifstream file;
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -36,7 +38,10 @@ Shader::Shader(const GLenum shader_type, const char * filename) : type(shader_ty
     // check if compilation successful
     int success;
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-    if (!success) ERROR("Failed to compile shader %s", filename);
+    if (!success) {
+      glGetShaderInfoLog(id, 512, NULL, buf);
+      ERROR("Failed to compile shader %s:\n%s", filename, buf);
+    }
   }
   catch (const std::ifstream::failure & e) {
     ERROR("Could not read shader: %s", filename);
@@ -61,7 +66,10 @@ ShaderProgram::ShaderProgram(const int n, const GLenum * types, const char * pat
   glLinkProgram(id);
   int success;
   glGetProgramiv(id, GL_LINK_STATUS, &success);
-  if (!success) ERROR("Failed to link shading program!");
+  if (!success) {
+    glGetProgramInfoLog(id, 512, NULL, buf);
+    ERROR("Shader linking error for shaders:\n%s", buf);
+  }
 
   for (size_t i = 0; i < n; i++) {
     glDeleteShader(shaders[i].id);

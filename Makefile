@@ -7,7 +7,7 @@ HEADERS=$(subst src/,include/,$(shell find src -type f -name "*.h"))
 
 SOURCE=\
        src/main.cpp \
-       src/graphics/triangles.cpp \
+       src/graphics/renderer.cpp \
        src/graphics/glad/glad.cpp \
        src/graphics/shader.cpp
 OBJECTS=$(SOURCE:src/%.cpp=obj/%.o)

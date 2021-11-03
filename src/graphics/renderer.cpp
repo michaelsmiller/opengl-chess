@@ -8,7 +8,7 @@
 #include "graphics/glad/glad.h" // generated file that deals with OpenGL for us theoretically
 #include <GLFW/glfw3.h>
 
-#include "triangles.h"
+#include "renderer.h"
 #include "shader.h" // for ShaderProgram
 
 // Called every time window is resized
@@ -18,7 +18,7 @@ framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }  
 
 void
-TriangleRenderer::processInput()
+BoardRenderer::processInput()
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     printf("Escape key pressed\n");
@@ -26,7 +26,7 @@ TriangleRenderer::processInput()
   }
 }
 
-void TriangleRenderer::draw() {
+void BoardRenderer::draw() {
   // clear buffer
   glClearColor(.2f, .3f, .3f, 1.f); // sets the color that we are clearing to a dark blue-green
   glClear(GL_COLOR_BUFFER_BIT); // clears backbuffer
@@ -38,36 +38,35 @@ void TriangleRenderer::draw() {
   // Set uniforms
   shader_program->setFloat("time_val", val);
 
-
   // draw triangles
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-bool TriangleRenderer::shouldClose() {
+bool BoardRenderer::shouldClose() {
   return glfwWindowShouldClose(window);
 }
 
-void TriangleRenderer::afterSwap() {
+void BoardRenderer::afterSwap() {
   glfwPollEvents(); // looks for any new events
   frame_counter++;
 }
 
 // all rendering is done on backbuffer, this swaps with front buffer, flushing backbuffer
-void TriangleRenderer::swapBuffer() {
+void BoardRenderer::swapBuffer() {
   glfwSwapBuffers(window);
 }
 
-void TriangleRenderer::terminate() {
+void BoardRenderer::terminate() {
   glfwTerminate();
 }
 
-TriangleRenderer::~TriangleRenderer() {
+BoardRenderer::~BoardRenderer() {
   if (shader_program != nullptr)
     delete shader_program;
 }
 
-TriangleRenderer::TriangleRenderer() {
+BoardRenderer::BoardRenderer() {
   frame_counter = 0;
   // configure GLFW window handling
   glfwInit();
@@ -98,6 +97,11 @@ TriangleRenderer::TriangleRenderer() {
   const GLenum shader_types[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
   const char * shader_paths[] = {"shaders/default.vert", "shaders/default.frag"};
   shader_program = new ShaderProgram(2, shader_types, shader_paths);
+
+  // TODO: set a constant width for a square, get current size of screen to figure it out
+  //      2. Make vertex_data have a boolean instead of a color
+  //      3. Make 2 uniforms for different colors
+  //      4. Generate triangles and indices for each square on the board sequentially.
 
   // DEFINE TRIANGLE
   // [-1, 1] x [-1, 1]
