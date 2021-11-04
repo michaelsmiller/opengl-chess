@@ -13,4 +13,7 @@
   exit(1); \
 }
 
+
+float lerp(const float a, const float b, const float t);
+
 #endif

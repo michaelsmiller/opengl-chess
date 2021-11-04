@@ -6,6 +6,14 @@
 
 typedef GLuint glid; // for OpenGL objects
 
+typedef uint64_t u64;
+typedef uint32_t u32;
+typedef int64_t  i64;
+typedef int32_t  i32;
+typedef double   s64;
+typedef float    s32;
+typedef u32   b32;
+
 // math types
 struct vec2 {
   float x;
@@ -23,13 +31,11 @@ struct vec4 {
   float w;
 };
 
-typedef uint64_t u64;
-typedef uint32_t u32;
-typedef int64_t  i64;
-typedef int32_t  i32;
-typedef double   s64;
-typedef float    s32;
+// this follows OpenGL
+struct uvec2 {
+  u32 x;
+  u32 y;
+};
 
-typedef u32   b32;
 
 #endif

@@ -9,7 +9,8 @@ SOURCE=\
        src/main.cpp \
        src/graphics/renderer.cpp \
        src/graphics/glad/glad.cpp \
-       src/graphics/shader.cpp
+       src/graphics/shader.cpp \
+       src/util/util.cpp
 OBJECTS=$(SOURCE:src/%.cpp=obj/%.o)
 
 default: all

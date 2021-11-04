@@ -10,6 +10,7 @@
 
 #include "renderer.h"
 #include "shader.h" // for ShaderProgram
+#include "util/util.h"
 
 // Called every time window is resized
 static void
@@ -64,6 +65,8 @@ void BoardRenderer::terminate() {
 BoardRenderer::~BoardRenderer() {
   if (shader_program != nullptr)
     delete shader_program;
+  delete square_data;
+  delete square_indices;
 }
 
 BoardRenderer::BoardRenderer() {
@@ -105,16 +108,61 @@ BoardRenderer::BoardRenderer() {
 
   // DEFINE TRIANGLE
   // [-1, 1] x [-1, 1]
-  vertex_data vertices[] = {
-    {{-0.5f,  0.5f},{0. ,1. ,0. ,1. }},
-    {{-0.5f, -0.5f},{1. ,0. ,0. ,1. }}, 
-    {{ 0.5f, -0.5f},{0. ,0. ,1. ,1. }}, 
-    {{ 0.5f,  0.5f},{0. ,0. ,0.5,1.}}
-  };
-  unsigned int indices[] = {
-    0,1,2,
-    0,2,3
-  };
+  nsquares = 2;
+  square_data = new vertex_data[nsquares*4];
+  square_indices  = new u32[nsquares*6];
+  square_data[0] = {{-1.0f,  0.0f},{0,0}};
+  square_data[1] = {{-1.0f, -1.0f},{0,0}};
+  square_data[2] = {{ 0.0f, -1.0f},{0,0}};
+  square_data[3] = {{ 0.0f,  0.0f},{0,0}};
+
+  square_data[4] = {{ 0.0f,  0.9f},{0,0}};
+  square_data[5] = {{ 0.0f,  0.0f},{0,0}};
+  square_data[6] = {{ 0.9f,  0.0f},{0,0}};
+  square_data[7] = {{ 0.9f,  0.9f},{0,0}};
+
+  square_indices[0] = 0;
+  square_indices[1] = 1;
+  square_indices[2] = 2;
+  square_indices[3] = 0;
+  square_indices[4] = 2;
+  square_indices[5] = 3;
+
+  square_indices[6]  = 4;
+  square_indices[7]  = 5;
+  square_indices[8]  = 6;
+  square_indices[9]  = 4;
+  square_indices[10] = 6;
+  square_indices[11] = 7;
+
+  /* const int dim = 8; */
+  /* nsquares = dim*dim; */
+  /* const float nvertices_per_side = (float)(dim+1); // what is this */
+  /* square_data = new vertex_data[nsquares*4]; // 4 vertices per square */
+  /* square_indices = new u32[nsquares*3*2]; // 2 triangles with 3 vertices each; */
+  /* for (int i = 0, ij=0; i < dim; i++) { */
+  /*   float y1 = lerp(-1., 1., i/nvertices_per_side); */
+  /*   float y2 = lerp(-1., 1., (i+1)/nvertices_per_side); */
+  /*   for (int j = 0; j < dim; j++, ij++) { */
+  /*     float x1 = lerp(-1., 1., j/nvertices_per_side); */
+  /*     float x2 = lerp(-1., 1., (j+1)/nvertices_per_side); */
+  /*     printf("%.2f, %.2f\n", x1, y1); */
+  /*     square_data[4*ij+0] = {{x1, y2}, {i, j}}; */
+  /*     square_data[4*ij+1] = {{x1, y1}, {i, j}}; */
+  /*     square_data[4*ij+2] = {{x2, y1}, {i, j}}; */
+  /*     square_data[4*ij+3] = {{x2, y2}, {i, j}}; */
+
+  /*     const u32 base = 4*ij; */
+  /*     square_indices[6*ij+0] = base+0; */
+  /*     square_indices[6*ij+1] = base+1; */
+  /*     square_indices[6*ij+2] = base+2; */
+  /*     square_indices[6*ij+3] = base+0; */
+  /*     square_indices[6*ij+4] = base+2; */
+  /*     square_indices[6*ij+5] = base+3; */
+  /*   } */
+  /* } */
+
+
   // vertex buffer, for abstracting memory transfer between CPU and GPU
 
 	glGenVertexArrays(1, &vao);
@@ -123,18 +171,18 @@ BoardRenderer::BoardRenderer() {
   // these functions apply to vertex_buffer above
   glGenBuffers(1, &vertex_buffer); // 1 is the number of buffers
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4*nsquares*sizeof(vertex_data), square_data, GL_STATIC_DRAW);
 
   // element buffer
   glGenBuffers(1, &element_buffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer); // binds element_buffer for whatever the below call
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*nsquares*sizeof(u64), square_indices, GL_STATIC_DRAW);
 
 
   // args: which array, number of components in an array, type (size) of each attribute, whether to normalize, stride, offset of start of data
   // These lines set up the attributes of the vertex buffer object
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data), (void*)0); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 0); // enables the first attribute of the vertex array
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_data), (void*)(2*sizeof(float))); // specifies 1 attribute of each vertex: the position
+	glVertexAttribPointer(1, 2, GL_UNSIGNED_INT, GL_FALSE, sizeof(vertex_data), (void*)(sizeof(vec2))); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 1); // enables the first attribute of the vertex array
 }
