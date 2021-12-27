@@ -1,7 +1,7 @@
 /* #include <GLFW/glfw3.h> */
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h> // for sin
+#include <cmath> // for sin, lerp
 #include <fstream> // for reading in a file
 #include <string> // std::string
 
@@ -10,7 +10,9 @@
 
 #include "renderer.h"
 #include "shader.h" // for ShaderProgram
-#include "util/util.h"
+/* #include "util/util.h" */
+
+using std::lerp;
 
 // Called every time window is resized
 static void
@@ -144,13 +146,12 @@ BoardRenderer::BoardRenderer() {
   const float nvertices_per_side = (float)(dim+1); // what is this
   square_data = new vertex_data[nsquares*4]; // 4 vertices per square
   square_indices = new u32[nsquares*3*2]; // 2 triangles with 3 vertices each;
-  for (u32 i = 0, ij=0; i < dim; i++) {
-    float y1 = lerp(-1., 1., i/nvertices_per_side);
-    float y2 = lerp(-1., 1., (i+1)/nvertices_per_side);
-    for (u32 j = 0; j < dim; j++, ij++) {
-      float x1 = lerp(-1., 1., j/nvertices_per_side);
-      float x2 = lerp(-1., 1., (j+1)/nvertices_per_side);
-      printf("%u,%u\n", i, j);
+  for (int i = 0, ij=0; i < dim; i++) {
+    float y1 = lerp(-1.f, 1.f, i/nvertices_per_side);
+    float y2 = lerp(-1.f, 1.f, (i+1)/nvertices_per_side);
+    for (int j = 0; j < dim; j++, ij++) {
+      float x1 = lerp(-1.f, 1.f, j/nvertices_per_side);
+      float x2 = lerp(-1.f, 1.f, (j+1)/nvertices_per_side);
       square_data[4*ij+0] = {{x1, y2}, {i, j}};
       square_data[4*ij+1] = {{x1, y1}, {i, j}};
       square_data[4*ij+2] = {{x2, y1}, {i, j}};
@@ -190,6 +191,6 @@ BoardRenderer::BoardRenderer() {
   // These lines set up the attributes of the vertex buffer object
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data), (void*)0); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 0); // enables the first attribute of the vertex array
-	glVertexAttribPointer(1, 2, GL_UNSIGNED_INT, GL_FALSE, sizeof(vertex_data), (void*)(sizeof(vec2))); // specifies 1 attribute of each vertex: the position
+	glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, sizeof(vertex_data), (void*)(sizeof(vec2))); // specifies 1 attribute of each vertex: the position
 	glEnableVertexArrayAttrib(vao, 1); // enables the first attribute of the vertex array
 }

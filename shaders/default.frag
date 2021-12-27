@@ -1,7 +1,8 @@
-#version 330 core
+#version 440 core
 
-out vec4 fragColor;
-in vec4 vertexColor;
+layout (location = 0) in vec4 vertexColor;
+
+layout (location = 0) out vec4 fragColor;
 
 // uniform vec4 defaultColor;
 uniform float time_val;

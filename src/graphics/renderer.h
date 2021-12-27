@@ -12,7 +12,7 @@ class ShaderProgram; // forward definition, in shader.h
 
 struct vertex_data {
   vec2 position;
-  uvec2 index;
+  ivec2 index;
 };
 
 class BoardRenderer {

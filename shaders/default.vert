@@ -1,8 +1,8 @@
-#version 330 core
+#version 440 core
 layout (location = 0) in vec2 position;
-layout (location = 1) in uvec2 ind;
+layout (location = 1) in ivec2 ind;
 
-out vec4 vertexColor;
+layout (location = 0) out vec4 vertexColor;
 
 // uniform vec4 square_color1;
 
@@ -12,8 +12,8 @@ void main()
 
     vec4 white = vec4(1., 1., 1., 1.); // white
     vec4 black = vec4(0., 0., 0., 1.); // black
-    // if (mod(index.x + index.y, 2) == 0) {
-    if (ind.x == uint(0)) {
+    if (mod(int(ind.x) + int(ind.y), 2) == 0) {
+    // if (int(ind.x) > 1<<30) {
       vertexColor = black;
       // vertexColor = black;
     }

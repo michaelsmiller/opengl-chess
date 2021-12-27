@@ -36,6 +36,11 @@ struct uvec2 {
   u32 x;
   u32 y;
 };
+// this follows OpenGL
+struct ivec2 {
+  int x;
+  int y;
+};
 
 
 #endif

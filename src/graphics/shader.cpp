@@ -28,7 +28,7 @@ Shader::Shader(const GLenum shader_type, const char * filename) : type(shader_ty
     char * buffer = new char[length]; // allocate buffer
     file.read(buffer, length);
     file.close();
-
+;
     // shader shit with buffer
     id = glCreateShader(shader_type);
     glShaderSource(id, 1, &buffer, NULL);
@@ -50,7 +50,7 @@ Shader::Shader(const GLenum shader_type, const char * filename) : type(shader_ty
 
 ShaderProgram::ShaderProgram(const int n, const GLenum * types, const char * pathnames[]) {
   // compile all shaders
-  for (size_t i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     Shader shader(types[i], pathnames[i]);
     shaders.push_back(shader);
   }
@@ -59,7 +59,7 @@ ShaderProgram::ShaderProgram(const int n, const GLenum * types, const char * pat
 
   // create program
   id = glCreateProgram();
-  for (size_t i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     glAttachShader(id, shaders[i].id);
   }
   // Finally, link the shaders
@@ -71,7 +71,7 @@ ShaderProgram::ShaderProgram(const int n, const GLenum * types, const char * pat
     ERROR("Shader linking error for shaders:\n%s", buf);
   }
 
-  for (size_t i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     glDeleteShader(shaders[i].id);
   }
 }
